@@ -1,8 +1,26 @@
+# -*- coding: utf-8 -*-
+"""
+when
+An intuitive date processing library.
+
+Author: Sam Lucidi <sam@samlucidi.com>
+
+"""
+
 from datetime import datetime, timedelta
 from six import string_types
-
+__version__ = "0.1.0"
 
 class when(datetime):
+
+    _units = {
+        'year': 3.15569e7,
+        'month': 2.62974e6,
+        'day': 86400,
+        'hour': 3600,
+        'minute': 60,
+        'second': 1,
+    }
 
     _property_ordering = [
         'year',
@@ -11,7 +29,8 @@ class when(datetime):
         'hour',
         'minute',
         'second',
-        'microsecond']
+        'microsecond'
+    ]
 
     def __new__(cls, year=0, month=1, day=1, hour=0, minute=0,
                 second=0, microsecond=0, tzinfo=None):
@@ -110,18 +129,24 @@ class when(datetime):
             suffix = "from now"
         return when._ago_string(unit, units, suffix)
 
-    def add(self, unit, units):
-        argdict = {unit: units}
-        # this gives a datetime. not awesome.
-        d = self + timedelta(**argdict)
-        # breaks my heart that this doesn't
-        # work with immutable classes
-        #d.__class__ = self.__class__
+    def add(self, **args):
+        seconds = 0
+        for k, v in args.items():
+            if k.endswith('s'):
+                k = k[:-1]
+            seconds += (self._units[k] * v)
+
+        d = self + timedelta(seconds=seconds)
         return when.from_datetime(d)
 
-    def subtract(self, unit, units):
-        argdict = {unit: units}
-        d = self - timedelta(**argdict)
+    def subtract(self, **args):
+        seconds = 0
+        for k, v in args.items():
+            if k.endswith('s'):
+                k = k[:-1]
+            seconds += (self._units[k] * v)
+
+        d = self - timedelta(seconds=seconds)
         return when.from_datetime(d)
 
     @classmethod
@@ -138,6 +163,11 @@ class when(datetime):
         return w
 
     def calendar(self):
+        """
+
+
+        """
+
         today = when.now()
 
         delta = today - self
