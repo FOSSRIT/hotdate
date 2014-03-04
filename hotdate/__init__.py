@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-when
+hotdate
 An intuitive date processing library.
 
 Author: Sam Lucidi <sam@samlucidi.com>
@@ -9,9 +9,17 @@ Author: Sam Lucidi <sam@samlucidi.com>
 
 from datetime import datetime, timedelta
 from six import string_types
-__version__ = "0.1.0"
+__version__ = "0.2.1"
 
-class when(datetime):
+
+class hotdate(datetime):
+    """
+    'hotdate' objects wrap datetime, providing
+    all the familiar methods of that class
+    as well as a set of methods for friendly
+    formatting of dates.
+
+    """
 
     _units = {
         'year': 3.15569e7,
@@ -35,34 +43,38 @@ class when(datetime):
     def __new__(cls, year=0, month=1, day=1, hour=0, minute=0,
                 second=0, microsecond=0, tzinfo=None):
         """
-        Create a new 'when' object. There are a few different
+        Create a new 'hotdate' object. There are a few different
         ways to call this that do different things:
 
         1. no params:
-            Just calling when() gets you a shiny new
-            when object representing the current moment.
+            Just calling hotdate() gets you a shiny new
+            hotdate object representing the current moment.
             (i.e. datetime.datetime.now())
 
         2. date formating:
-            If you pass two strings to when(),
+            If you pass two strings to hotdate(),
             the first argument is treated as a date string
             and the second argument is treated as a strftime
             format string.
 
-            This lets you do things like 'when("2014", "%Y")',
-            which in this example would give you a when object
+            This lets you do things like 'hotdate("2014", "%Y")',
+            which in this example would give you a hotdate object
             representing 1/1/2014 at 00:00:00.
 
-        3. datetime-alike:
+        3. datetime conversion
+            If you pass in a datetime object as hotdate's first
+            argument, it will promote the datetime to a hotdate
+            object.
+
+        4. datetime-alike:
             You can also just pass in all the normal datetime parameters,
-            starting with the year. Unlike datetime, when will let you
+            starting with the year. Unlike datetime, hotdate will let you
             leave out everything but the year, so you can do something like
-            'when(2011)' and when will set the other parameters to their
-            minimum values. That example would give you a when object
+            'hotdate(2011)' and hotdate will set the other parameters to their
+            minimum values. That example would give you a hotdate object
             representing 1/1/2011 at 00:00:00.
 
         """
-
 
         if isinstance(year, string_types) and isinstance(month, string_types):
             # some gnarly argument overloading here
@@ -71,10 +83,16 @@ class when(datetime):
             # the creation of datetimes.
             datestr = year
             fstr = month
-            obj = when.strptime(datestr, fstr)
+            obj = hotdate.strptime(datestr, fstr)
+        elif isinstance(year, datetime):
+            # overloading to allow
+            # converting a datetime into
+            # a hotdate object.
+            dt = year
+            obj = hotdate.from_datetime(dt)
         elif year:
             obj = super(
-                when,
+                hotdate,
                 cls).__new__(
                 cls,
                 year,
@@ -87,30 +105,35 @@ class when(datetime):
                 tzinfo)
         else:
             now = datetime.now()
-            obj = super(
-                when,
-                cls).__new__(
-                cls,
-                now.year,
-                month=now.month,
-                day=now.day,
-                hour=now.hour,
-                minute=now.minute,
-                second=now.second,
-                microsecond=now.microsecond)
+            obj = hotdate.from_datetime(now)
         return obj
 
     def format(self, fstr=None, microseconds=False):
+        """
+        Format this hotdate object with the
+        provided format string, or just
+        iso8601 format it if none is
+        provided.
+
+        """
+
         if fstr:
             output = self.strftime(fstr)
         else:
-            output = when.isoformat(self)
+            output = hotdate.isoformat(self)
             if not microseconds:
                 output = output.split(".")[0]
         return output
 
     def from_now(self):
-        now = when.now()
+        """
+        Return a human readable string
+        that indicates the distance between
+        this hotdate object and the current time.
+
+        """
+
+        now = hotdate.now()
         delta = self - now
         days = int(abs(delta.total_seconds() / 86400))
         seconds = int(abs(delta.total_seconds()))
@@ -142,9 +165,22 @@ class when(datetime):
             suffix = "ago"
         else:
             suffix = "from now"
-        return when._ago_string(unit, units, suffix)
+        return hotdate._ago_string(unit, units, suffix)
 
     def add(self, **args):
+        """
+        Add the number of time units specified in
+        the keyword args to this object, returning
+        a new hotdate object.
+
+        Valid kwargs are year, month, day, hour, minute, second.
+        It's also acceptable to pluralize them for readability's
+        sake, e.g. you can do either of these:
+            hotdate().add(year=1, day=15)
+            hotdate().add(years=1, days=15)
+
+        """
+
         seconds = 0
         for k, v in args.items():
             if k.endswith('s'):
@@ -152,9 +188,22 @@ class when(datetime):
             seconds += (self._units[k] * v)
 
         d = self + timedelta(seconds=seconds)
-        return when.from_datetime(d)
+        return hotdate.from_datetime(d)
 
     def subtract(self, **args):
+        """
+        Subtract the number of time units specified in
+        the keyword args to this object, returning
+        a new hotdate object.
+
+        Valid kwargs are year, month, day, hour, minute, second.
+        It's also acceptable to pluralize them for readability's
+        sake, e.g. you can do either of these:
+            hotdate().subtract(year=1, day=15)
+            hotdate().subtract(years=1, days=15)
+
+        """
+
         seconds = 0
         for k, v in args.items():
             if k.endswith('s'):
@@ -162,11 +211,27 @@ class when(datetime):
             seconds += (self._units[k] * v)
 
         d = self - timedelta(seconds=seconds)
-        return when.from_datetime(d)
+        return hotdate.from_datetime(d)
 
     def calendar(self):
         """
+        Return a string that would be
+        suitable for display in something
+        like a calendar or reminder app.
+        The exact format to be returned
+        depends on the distance between
+        the object this is called on and
+        the current date.
 
+        In the event of a long distance,
+        it returns the locale's date
+        format, e.g. 1/1/2014.
+
+        For closer dates, it will return
+        strings along the lines of:
+            "Yesterday at 2:31pm"
+            "Tomorrow at 4:01am"
+            "Last Thursday at 9:00am"
 
         """
 
@@ -176,7 +241,7 @@ class when(datetime):
         prefix = ''
         calday = ''
         use_calday = False
-        # TODO: fix this godawful mess when
+        # TODO: refactor this godawful mess when
         # I am actually awake
         if -7 < delta.days < 0:
             use_calday = True
@@ -201,6 +266,16 @@ class when(datetime):
             return self.strftime('%x')
 
     def start_of(self, unit):
+        """
+        Return a hotdate object representing
+        the beginning of the chosen time unit.
+
+        For example, hotdate(2014).start_of('year')
+        would return a hotdate representing the
+        date 1/1/2014 at 00:00:00
+
+        """
+
         props = {}
         ix = self._property_ordering.index(unit)
         for prop in self._property_ordering:
@@ -210,20 +285,36 @@ class when(datetime):
                     props[prop] = 1
                 else:
                     props[prop] = 0
-        return when(**props)
+        return hotdate(**props)
 
     def end_of(self, unit):
+        """
+        Return a hotdate object representing
+        the end of the chosen time unit.
+
+        For example, hotdate(2014).end_of('year')
+        would return a hotdate representing the
+        date 12/31/2014 at 23:59:59
+
+        """
+
         props = {}
         ix = self._property_ordering.index(unit)
         for prop in self._property_ordering[:(ix + 1)]:
             props[prop] = getattr(self, prop)
             if prop == unit:
                 props[prop] += 1
-        return when.from_datetime(when(**props) - timedelta(seconds=1))
+        return hotdate.from_datetime(hotdate(**props) - timedelta(seconds=1))
 
     @classmethod
     def from_datetime(cls, dt):
-        w = when(
+        """
+        Promote a datetime to
+        a hotdate object.
+
+        """
+
+        h = hotdate(
             dt.year,
             dt.month,
             dt.day,
@@ -232,10 +323,15 @@ class when(datetime):
             dt.second,
             dt.microsecond,
             dt.tzinfo)
-        return w
+        return h
 
     @classmethod
     def _ago_string(cls, unit, units, suffix):
+        """
+        Produce a nicely formatted timeago string.
+
+        """
+
         if units == 0:
             return "just now"
         else:
