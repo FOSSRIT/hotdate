@@ -1,7 +1,7 @@
 hotdate
 =======
 
-`hotdate` is a library for doing friendly date formating. It's API is inspired by [Moment.js](http://momentjs.com).
+`hotdate` is a library for doing friendly date formating. Its API is inspired by [Moment.js](http://momentjs.com).
 
 `hotdate` wraps Python's builtin `datetime` object with a layer that simplifies some common operations that are annoying to do with `datetime`. More importantly, `hotdate` provides functionality for doing friendly/human-readable relative date formatting. It even has one of those crazy "fluent interfaces" that are so hip with the kids these days.
 
