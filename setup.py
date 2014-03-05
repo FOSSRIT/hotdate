@@ -9,6 +9,10 @@ setup(
     packages=['hotdate'],
     url='http://pypi.python.org/pypi/when/',
     license='LICENSE',
+    install_requires=[
+    	'six',
+    	'dateutil'
+    ],
     description='Intuitive date formatting.',
     long_description=open('README.md').read()
 )

@@ -7,8 +7,10 @@ Author: Sam Lucidi <sam@samlucidi.com>
 
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from six import string_types
+from dateutil.relativedelta import relativedelta
+
 __version__ = "0.2.3"
 
 
@@ -181,14 +183,13 @@ class hotdate(datetime):
 
         """
 
+        hd = self
         seconds = 0
         for k, v in args.items():
-            if k.endswith('s'):
-                k = k[:-1]
-            seconds += (self._units[k] * v)
-
-        d = self + timedelta(seconds=seconds)
-        return hotdate.from_datetime(d)
+            if not k.endswith('s'):
+                k = k + 's'
+            hd = hd + relativedelta(**{k: v})
+        return hotdate.from_datetime(hd)
 
     def subtract(self, **args):
         """
@@ -204,14 +205,13 @@ class hotdate(datetime):
 
         """
 
+        hd = self
         seconds = 0
         for k, v in args.items():
-            if k.endswith('s'):
-                k = k[:-1]
-            seconds += (self._units[k] * v)
-
-        d = self - timedelta(seconds=seconds)
-        return hotdate.from_datetime(d)
+            if not k.endswith('s'):
+                k = k + 's'
+            hd = hd - relativedelta(**{k: v})
+        return hotdate.from_datetime(hd)
 
     def calendar(self):
         """
