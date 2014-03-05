@@ -9,7 +9,7 @@ Author: Sam Lucidi <sam@samlucidi.com>
 
 from datetime import datetime, timedelta
 from six import string_types
-__version__ = "0.2.1"
+__version__ = "0.2.3"
 
 
 class hotdate(datetime):
@@ -235,7 +235,7 @@ class hotdate(datetime):
 
         """
 
-        today = when.now()
+        today = hotdate.now()
 
         delta = today - self
         prefix = ''
