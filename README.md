@@ -1,4 +1,4 @@
-when
-====
+hotdate
+=======
 
 Intuitive date formatting.
