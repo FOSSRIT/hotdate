@@ -1,4 +1,4 @@
-hotdate
+hotdate [![Build Status](https://travis-ci.org/mansam/hotdate.png?branch=master)](https://travis-ci.org/mansam/hotdate)
 =======
 
 `hotdate` is a library for doing friendly date formating. Its API is inspired by [Moment.js](http://momentjs.com).
