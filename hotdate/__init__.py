@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, date
 from six import string_types
 from dateutil.relativedelta import relativedelta
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 
 class hotdate(datetime):
@@ -135,40 +135,44 @@ class hotdate(datetime):
 
         """
 
-        now = hotdate.now()
-        delta = self - now
-        days = int(abs(delta.total_seconds() / 86400))
-        seconds = int(abs(delta.total_seconds()))
-        unit = ''
-        units = 0
-        # this is all very approximate
-        if days / 365.0 >= 1:
-            unit = "year"
-            units = int(days / 365.0)
-        elif days / 30.0 >= 1:
-            unit = "month"
-            units = int(days / 30.0)
-        elif days / 7.0 >= 1:
-            unit = "week"
-            units = int(days / 7.0)
-        elif days > 0:
-            unit = "day"
-            units = days
-        elif seconds / 3600.0 >= 1:
-            unit = "hour"
-            units = int(seconds / 3600.0)
-        elif seconds / 60.0 >= 1:
-            unit = "minute"
-            units = int(seconds / 60.0)
-        else:
-            unit = "second"
-            units = seconds
-        if delta.days < 0 or delta.seconds < 0:
-            suffix = "ago"
-        else:
-            suffix = "from now"
-        return hotdate._ago_string(unit, units, suffix)
+        now = datetime.now()
+        delta = relativedelta(self, now)
+        delta.microseconds = 0
+        delta = delta + relativedelta(seconds=1)
+        print(delta)
+        for u in self._property_ordering:
+            if getattr(delta, u+'s'):
+                unit = u
+                units = getattr(delta, u+'s')
+                unit, units = self.round_unit(unit, units, delta)
 
+                return hotdate._ago_string(unit, units)
+        return 'just now'
+
+    @classmethod
+    def round_unit(cls, unit, units, delta):
+        """
+        Horribly approximate method of rounding
+        date deltas for the sake of having a 
+        human readable string.
+
+        """
+
+        if unit == 'year':
+            if delta.months >= 6:
+                units += 1
+        elif unit == 'month':
+            if delta.days >= 15:
+                units += 1
+            if units == 12:
+                unit = 'year'
+                units = 1
+        elif unit == 'day':
+            if delta.days >= 28:
+                unit = 'month'
+                units = 1
+        return unit, units
+        
     def add(self, **args):
         """
         Add the number of time units specified in
@@ -184,11 +188,13 @@ class hotdate(datetime):
         """
 
         hd = self
-        seconds = 0
+        relargs = {}
         for k, v in args.items():
             if not k.endswith('s'):
                 k = k + 's'
-            hd = hd + relativedelta(**{k: v})
+            relargs[k] = v
+        hd = hd + relativedelta(**relargs)
+        print(hd)
         return hotdate.from_datetime(hd)
 
     def subtract(self, **args):
@@ -235,9 +241,9 @@ class hotdate(datetime):
 
         """
 
-        today = hotdate.now()
+        today = datetime.now()
 
-        delta = today - self
+        delta = relativedelta(today, self)
         prefix = ''
         calday = ''
         use_calday = False
@@ -251,9 +257,9 @@ class hotdate(datetime):
         if delta.days == 0:
             use_calday = True
         if use_calday:
-            if today.day == (self.day - 1):
+            if delta.days == -1:
                 calday = 'Tomorrow'
-            elif today.day == (self.day + 1):
+            elif delta.days == 1:
                 calday = 'Yesterday'
                 prefix = ''
             elif today.day == self.day:
@@ -326,20 +332,29 @@ class hotdate(datetime):
         return h
 
     @classmethod
-    def _ago_string(cls, unit, units, suffix):
+    def _ago_string(cls, unit, units):
         """
         Produce a nicely formatted timeago string.
 
         """
 
-        if units == 0:
-            return "just now"
+        if units < 0:
+            suffix = "ago"
+        elif units > 0:
+            suffix = "from now"
         else:
-            article = 'a'
-            if unit == 'hour':
-                article = article + 'n'
-            if units == 1:
-                units = article
-            else:
-                unit = unit + 's'
-            return "{} {} {}".format(units, unit, suffix)
+            return "just now"
+
+        if unit == 'microsecond':
+            return 'just now'
+
+        units = abs(units)
+
+        article = 'a'
+        if unit == 'hour':
+            article = article + 'n'
+        if units == 1:
+            units = article
+        else:
+            unit = unit + 's'
+        return "{} {} {}".format(units, unit, suffix)

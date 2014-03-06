@@ -93,3 +93,20 @@ You can use it to format dates:
 	>>> hotdate(2011).calendar()
 	'1/1/2011'
 ```
+
+### Use it just like a datetime
+
+```python
+	>>> hotdate().isoformat()
+	'2014-03-05T17:00:28.699772'
+```
+
+```python
+	>>> hotdate.fromtimestamp(1311218002)
+	hotdate(2011, 7, 20, 23, 13, 22)
+```
+
+```python
+	>>> hotdate().timetuple()
+	time.struct_time(tm_year=2014, tm_mon=3, tm_mday=5, tm_hour=17, tm_min=10, tm_sec=35, tm_wday=2, tm_yday=64, tm_isdst=-1)
+```
