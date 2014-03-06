@@ -10,7 +10,7 @@ setup(
     license='LICENSE',
     install_requires=[
     	'six',
-    	'dateutil'
+    	'python-dateutil'
     ],
     description='Intuitive date formatting.',
     long_description=open('README.md').read()
