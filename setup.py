@@ -1,9 +1,8 @@
-from distutils.core import setup
-import hotdate
+from setuptools import setup
 
 setup(
     name='hotdate',
-    version=hotdate.__version__,
+    version='0.4.2',
     author='Samuel "mansam" Lucidi',
     author_email="mansam@csh.rit.edu",
     packages=['hotdate'],

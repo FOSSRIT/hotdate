@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, date
 from six import string_types
 from dateutil.relativedelta import relativedelta
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 
 class hotdate(datetime):
@@ -148,7 +148,7 @@ class hotdate(datetime):
 
                 return hotdate._ago_string(unit, units)
         return 'just now'
-        
+
     def add(self, **args):
         """
         Add the number of time units specified in
@@ -339,7 +339,7 @@ class hotdate(datetime):
     def _round_unit(cls, unit, units, delta):
         """
         Horribly approximate method of rounding
-        date deltas for the sake of having a 
+        date deltas for the sake of having a
         human readable string.
 
         """
