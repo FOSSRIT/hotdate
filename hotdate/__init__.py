@@ -333,7 +333,7 @@ class hotdate(datetime):
             units = article
         else:
             unit = unit + 's'
-        return "0} {1} {2}".format(units, unit, suffix)
+        return "{0} {1} {2}".format(units, unit, suffix)
 
     @classmethod
     def _round_unit(cls, unit, units, delta):
