@@ -7,7 +7,7 @@ setup(
     author='Samuel "mansam" Lucidi',
     author_email="mansam@csh.rit.edu",
     packages=['hotdate'],
-    url='http://pypi.python.org/pypi/when/',
+    url='http://pypi.python.org/pypi/hotdate/',
     license='LICENSE',
     install_requires=[
     	'six',
