@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, date
 from six import string_types
 from dateutil.relativedelta import relativedelta
 
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 
 
 class hotdate(datetime):
@@ -144,34 +144,10 @@ class hotdate(datetime):
             if getattr(delta, u+'s'):
                 unit = u
                 units = getattr(delta, u+'s')
-                unit, units = self.round_unit(unit, units, delta)
+                unit, units = self._round_unit(unit, units, delta)
 
                 return hotdate._ago_string(unit, units)
         return 'just now'
-
-    @classmethod
-    def round_unit(cls, unit, units, delta):
-        """
-        Horribly approximate method of rounding
-        date deltas for the sake of having a 
-        human readable string.
-
-        """
-
-        if unit == 'year':
-            if delta.months >= 6:
-                units += 1
-        elif unit == 'month':
-            if delta.days >= 15:
-                units += 1
-            if units == 12:
-                unit = 'year'
-                units = 1
-        elif unit == 'day':
-            if delta.days >= 28:
-                unit = 'month'
-                units = 1
-        return unit, units
         
     def add(self, **args):
         """
@@ -358,3 +334,27 @@ class hotdate(datetime):
         else:
             unit = unit + 's'
         return "{} {} {}".format(units, unit, suffix)
+
+    @classmethod
+    def _round_unit(cls, unit, units, delta):
+        """
+        Horribly approximate method of rounding
+        date deltas for the sake of having a 
+        human readable string.
+
+        """
+
+        if unit == 'year':
+            if delta.months >= 6:
+                units += 1
+        elif unit == 'month':
+            if delta.days >= 15:
+                units += 1
+            if units == 12:
+                unit = 'year'
+                units = 1
+        elif unit == 'day':
+            if delta.days >= 28:
+                unit = 'month'
+                units = 1
+        return unit, units
