@@ -10,7 +10,9 @@ setup(
     license='LICENSE',
     install_requires=[
     	'six',
-    	'python-dateutil'
+    	'python-dateutil',
+    	'freezegun'
+
     ],
     description='Intuitive date formatting.',
     long_description=open('README.md').read()
