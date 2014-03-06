@@ -242,7 +242,7 @@ class hotdate(datetime):
                 calday = 'Today'
             else:
                 calday = self.strftime('%A')
-            return '{}{} at {}'.format(
+            return '{0}{1} at {2}'.format(
                 prefix, calday, self.strftime('%I:%M%p'))
         else:
             return self.strftime('%x')
@@ -333,7 +333,7 @@ class hotdate(datetime):
             units = article
         else:
             unit = unit + 's'
-        return "{} {} {}".format(units, unit, suffix)
+        return "0} {1} {2}".format(units, unit, suffix)
 
     @classmethod
     def _round_unit(cls, unit, units, delta):
