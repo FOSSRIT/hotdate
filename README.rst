@@ -72,12 +72,12 @@ You can use it to format dates:
 .. code:: python
 
         >>> hotdate(2011).from_now()
-        '2 years ago'
+        '3 years ago'
 
 .. code:: python
 
         >>> hotdate().add(minutes=30).from_now()
-        '29 minutes from now'
+        '30 minutes from now'
 
 Calendar date formatting
 ~~~~~~~~~~~~~~~~~~~~~~~~
