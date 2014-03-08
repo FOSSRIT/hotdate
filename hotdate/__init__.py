@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, date
 from six import string_types
 from dateutil.relativedelta import relativedelta
 
-__version__ = "0.4.4"
+__version__ = "0.4.5"
 
 
 class hotdate(datetime):
@@ -139,7 +139,6 @@ class hotdate(datetime):
         delta = relativedelta(self, now)
         delta.microseconds = 0
         delta = delta + relativedelta(seconds=1)
-        print(delta)
         for u in self._property_ordering:
             if getattr(delta, u+'s'):
                 unit = u
@@ -170,7 +169,6 @@ class hotdate(datetime):
                 k = k + 's'
             relargs[k] = v
         hd = hd + relativedelta(**relargs)
-        print(hd)
         return hotdate.from_datetime(hd)
 
     def subtract(self, **args):

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='hotdate',
-    version='0.4.4',
+    version='0.4.5',
     author='Samuel "mansam" Lucidi',
     author_email="mansam@csh.rit.edu",
     packages=['hotdate'],
