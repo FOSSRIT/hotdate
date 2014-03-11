@@ -1,5 +1,5 @@
-hotdate |Build Status|
-======================
+hotdate |Build Status| |PyPI Version| 
+=====================================
 
 ``hotdate`` is a library for doing friendly date formating. Its API is
 inspired by `Moment.js <http://momentjs.com>`__.
@@ -123,3 +123,6 @@ Use it just like a datetime
 
 .. |Build Status| image:: https://travis-ci.org/mansam/hotdate.png?branch=master
    :target: https://travis-ci.org/mansam/hotdate
+   
+.. |PyPI Version| image:: http://badge.fury.io/py/hotdate.png
+   :target: http://badge.fury.io/py/hotdate
